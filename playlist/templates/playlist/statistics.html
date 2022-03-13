@@ -1,0 +1,27 @@
+<!DOCTYPE HTML>
+{% load static %}
+
+<link rel="stylesheet" type="text/css" href="{% static 'playlist/style.css' %}">
+<html style="background-color:rgb(35, 35, 35);">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>trackolini</title>
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body style="color:white;">
+  <h1>Trackolini</h1>
+  <form action = "statistics" method = "get">
+      <label for="artist">Artist: </label>
+      <input id="artist" type="text" name="artist">
+      <input type="submit" value="OK">
+  </form>
+  {% autoescape off %}
+  {{ plot_div_tempo }}
+  <hr>
+  {{ plot_div_loudness }}
+  <hr>
+  {{ plot_div_key }}
+  {% endautoescape %}
+</body>
+</html>

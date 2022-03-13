@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html style="background-color:rgb(35, 35, 35);">
+  {% csrf_token %}
+  <head>
+
+  </head>
+  <body style="color:white;">
+    <h1>Trackolini</h1>
+    <form action = "statistics" method = "get">
+        <label for="artist">Artist: </label>
+        <input id="artist" type="text" name="artist">
+        <input type="submit" value="OK">
+    </form>
+  </body>
+</html>
