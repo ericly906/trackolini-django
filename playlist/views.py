@@ -5,6 +5,7 @@ import plotly.graph_objects as go
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from .forms import ArtistForm
+from plotly.subplots import make_subplots
 
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
@@ -76,6 +77,7 @@ def bar_graph_constructor(artist, tracks, feature, label):
     )
     return plot(fig, output_type='div', include_plotlyjs=False, show_link=False, link_text="")
 
+
 def track_analysis(request):
     artist = request.GET.get('artist', '')
     if artist == '':
@@ -87,7 +89,60 @@ def track_analysis(request):
     artist = search_query['tracks']['items'][0]['artists'][0]['name']
     track = search_query['tracks']['items'][0]['name']
     track_uri = search_query['tracks']['items'][0]['uri']
-    section_analysis = spotify.audio_analysis(track_uri)['sections']
+    sections = spotify.audio_analysis(track_uri)['sections']
 
-    
-    return render(request, "playlist/track_analysis.html")
+    time = []
+    confidence = []
+    loudness = []
+    tempo = []
+    tempo_confidence = []
+    key = []
+    key_confidence = []
+    time_signature = []
+    time_signature_confidence = []
+
+    for section in sections:
+        time.append(section['start'])
+        confidence.append(section['confidence'])
+        loudness.append(section['loudness'])
+        tempo.append(section['tempo'])
+        tempo_confidence.append(section['tempo_confidence'])
+        key.append(section['key'])
+        key_confidence.append(section['key_confidence'])
+        time_signature.append(section['time_signature'])
+        time_signature_confidence.append(section['time_signature_confidence'])
+
+    plot_div_tempo = line_subplot_constructor(time, tempo, tempo_confidence, "Tempo", "Tempo Confidence")
+
+    plot_div_key = line_subplot_constructor(time, key, key_confidence, "Key", "Key Confidence")
+
+    plot_div_time_signature = line_subplot_constructor(time, time_signature, time_signature_confidence, "Time Signature", "Time Signature Confidence")
+
+    return render(request, "playlist/track_analysis.html", context={'artist': artist, 'track': track, 'plot_div_tempo': plot_div_tempo, 'plot_div_key': plot_div_key, 'plot_div_time_signature': plot_div_time_signature})
+
+def line_subplot_constructor(time, y1, y2, name1, name2):
+    fig = make_subplots(rows=1, cols=2)
+
+    fig.add_trace(
+        go.Scatter(x=time, y=y1, name=name1),
+        row=1, col=1
+    )
+
+    fig.add_trace(
+        go.Scatter(x=time, y=y2, name=name2),
+        row=1, col=2
+    )
+
+    fig.update_layout(
+        height=600, width=800,
+        title_text=name1,
+        font=dict(
+            family="Courier New, monospace",
+            size=12,
+            color="White"
+        ),
+        xaxis_title="Duration (Seconds)",
+        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='rgba(0,0,0,0)',
+    )
+    return plot(fig, output_type='div', include_plotlyjs=False, show_link=False, link_text="")

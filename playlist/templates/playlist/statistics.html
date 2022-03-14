@@ -11,6 +11,7 @@
 </head>
 <body style="color:white;">
   <h1>Trackolini</h1>
+  <p>Analyze an artist's top 10 tracks</p>
   <form id = 'form' action = "statistics" method = "get">
       <label for="artist">Artist: </label>
       <input id="artist" type="text" name="artist" required>
@@ -26,6 +27,26 @@
       document.getElementById("spinner").style.display = "block";
     }
   </script>
+  <br>
+  <p>Analyze an individual track</p>
+  <form id = "trackForm" action = "track_analysis" method = "get">
+    <label for="track">Track: </label>
+    <input id="track" type="text" name="track" required>
+    <label for="artist">Artist: </label>
+    <input id="artist" type="text" name="artist" required>
+    <button type="submit" value="OK">Submit</button>
+  </form>
+  <div id="trackAnalyzing" style="display:none;">Analyzing...</div>
+  <div id="trackSpinner" class="loader"></div>
+  <script>
+    const trackForm = document.getElementById('trackForm');
+    trackForm.addEventListener("submit", showLoader);
+    function showLoader() {
+      document.getElementById("trackAnalyzing").style.display = "block";
+      document.getElementById("trackSpinner").style.display = "block";
+    }
+  </script>
+
   {% autoescape off %}
   {{ plot_div_tempo }}
   <hr>

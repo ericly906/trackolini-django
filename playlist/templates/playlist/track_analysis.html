@@ -1,0 +1,62 @@
+<!DOCTYPE HTML>
+{% load static %}
+
+<link rel="stylesheet" type="text/css" href="{% static 'playlist/style.css' %}">
+<html style="background-color:rgb(35, 35, 35);">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>trackolini</title>
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body style="color:white;">
+  <h1>Trackolini</h1>
+  <p>Analyze an artist's top 10 tracks</p>
+  <form id = 'form' action = "statistics" method = "get">
+      <label for="artist">Artist: </label>
+      <input id="artist" type="text" name="artist" required>
+      <button type="submit" value="OK">Submit</button>
+  </form>
+  <div id="analyzing" style="display:none;">Analyzing...</div>
+  <div id="spinner" class="loader"></div>
+  <script>
+    const form = document.getElementById('form');
+    form.addEventListener("submit", showLoader);
+    function showLoader() {
+      document.getElementById("analyzing").style.display = "block";
+      document.getElementById("spinner").style.display = "block";
+    }
+  </script>
+  <br>
+  <p>Analyze an individual track</p>
+  <form id = "trackForm" action = "track_analysis" method = "get">
+    <label for="track">Track: </label>
+    <input id="track" type="text" name="track" required>
+    <label for="artist">Artist: </label>
+    <input id="artist" type="text" name="artist" required>
+    <button type="submit" value="OK">Submit</button>
+  </form>
+  <div id="trackAnalyzing" style="display:none;">Analyzing...</div>
+  <div id="trackSpinner" class="loader"></div>
+  <script>
+    const trackForm = document.getElementById('trackForm');
+    trackForm.addEventListener("submit", showLoader);
+    function showLoader() {
+      document.getElementById("trackAnalyzing").style.display = "block";
+      document.getElementById("trackSpinner").style.display = "block";
+    }
+  </script>
+  <h2>
+    {% autoescape off %}
+    {{ track }} by {{ artist }}
+    {% endautoescape %}
+  </h2>
+  {% autoescape off %}
+  {{ plot_div_tempo }}
+  <hr>
+  {{ plot_div_key }}
+  <hr>
+  {{ plot_div_time_signature }}
+  {% endautoescape %}
+</body>
+</html>
