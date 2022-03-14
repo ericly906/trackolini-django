@@ -26,8 +26,12 @@ def statistics(request):
     artist = request.GET.get('artist', '')
     if artist == '':
         return render(request, "playlist/home.html")
-    artist = spotify.search(q="artist:" + artist, type='artist')['artists']['items'][0]['name']
-    artist_uri = spotify.search(q="artist:" + artist, type='artist')['artists']['items'][0]['uri']
+    search_query = spotify.search(q="artist:" + artist, type='artist')
+    artist_not_found_error = "Artist not found."
+    if len(search_query['artists']['items']) < 1:
+        return render(request, "playlist/home.html", context={'artist_not_found_error': artist_not_found_error})
+    artist = search_query['artists']['items'][0]['name']
+    artist_uri = search_query['artists']['items'][0]['uri']
     artist_tracks = spotify.artist_top_tracks(artist_uri)['tracks']
     track_uris = []
     track_names = []
@@ -86,10 +90,17 @@ def track_analysis(request):
     if track == '':
         return render(request, "playlist/home.html")
     search_query = spotify.search(q="artist:" + artist + ", track:" + track, type='track')
+    track_not_found_error = "Track not found."
+    if len(search_query['tracks']['items']) < 1:
+        return render(request, "playlist/home.html", context={'track_not_found_error': track_not_found_error})
+
     artist = search_query['tracks']['items'][0]['artists'][0]['name']
     track = search_query['tracks']['items'][0]['name']
     track_uri = search_query['tracks']['items'][0]['uri']
+    track_id = search_query['tracks']['items'][0]['id']
     sections = spotify.audio_analysis(track_uri)['sections']
+
+    player = "<iframe style='border-radius:12px' src='https://open.spotify.com/embed/track/" + track_id +"' width='100%' height='380' frameBorder='0' allowfullscreen='' allow='autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture'></iframe>"
 
     time = []
     confidence = []
@@ -118,7 +129,7 @@ def track_analysis(request):
 
     plot_div_time_signature = line_subplot_constructor(time, time_signature, time_signature_confidence, "Time Signature", "Time Signature Confidence")
 
-    return render(request, "playlist/track_analysis.html", context={'artist': artist, 'track': track, 'plot_div_tempo': plot_div_tempo, 'plot_div_key': plot_div_key, 'plot_div_time_signature': plot_div_time_signature})
+    return render(request, "playlist/track_analysis.html", context={'artist': artist, 'track': track, 'player': player, 'plot_div_tempo': plot_div_tempo, 'plot_div_key': plot_div_key, 'plot_div_time_signature': plot_div_time_signature})
 
 def line_subplot_constructor(time, y1, y2, name1, name2):
     fig = make_subplots(rows=1, cols=2)
@@ -144,5 +155,6 @@ def line_subplot_constructor(time, y1, y2, name1, name2):
         xaxis_title="Duration (Seconds)",
         paper_bgcolor='rgba(0,0,0,0)',
         plot_bgcolor='rgba(0,0,0,0)',
+        yaxis2 = dict(range=[0, 1]),
     )
     return plot(fig, output_type='div', include_plotlyjs=False, show_link=False, link_text="")

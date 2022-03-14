@@ -15,6 +15,7 @@
         <input id="artist" type="text" name="artist" required>
         <button id='sb' type="submit" value="OK">Submit</button>
     </form>
+    <p style="color:red;">{{ artist_not_found_error }}</p>
     <div id="statAnalyzing" style="display:none;">Analyzing...</div>
     <div id="statSpinner" class="loader"></div>
     <script>
@@ -34,6 +35,7 @@
       <input id="artist" type="text" name="artist" required>
       <button type="submit" value="OK">Submit</button>
     </form>
+    <p style="color:red;">{{ track_not_found_error }}</p>
     <div id="trackAnalyzing" style="display:none;">Analyzing...</div>
     <div id="trackSpinner" class="loader"></div>
     <script>
