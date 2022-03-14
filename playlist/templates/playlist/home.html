@@ -9,19 +9,37 @@
   </head>
   <body style="color:white;">
     <h1>Trackolini</h1>
-    <form id = "form" action = "statistics" method = "get">
+    <form id = "statForm" action = "statistics" method = "get">
         <label for="artist">Artist: </label>
         <input id="artist" type="text" name="artist" required>
         <button id='sb' type="submit" value="OK">Submit</button>
     </form>
-    <div id="analyzing" style="display:none;">Analyzing...</div>
-    <div id="spinner" class="loader"></div>
+    <div id="statAnalyzing" style="display:none;">Analyzing...</div>
+    <div id="statSpinner" class="loader"></div>
     <script>
-      const form = document.getElementById('form');
-      form.addEventListener("submit", showLoader);
+      const statForm = document.getElementById('statForm');
+      statForm.addEventListener("submit", showLoader);
       function showLoader() {
-        document.getElementById("analyzing").style.display = "block";
-        document.getElementById("spinner").style.display = "block";
+        document.getElementById("statAnalyzing").style.display = "block";
+        document.getElementById("statSpinner").style.display = "block";
+      }
+    </script>
+
+    <form id = "trackForm" action = "track_analysis" method = "get">
+      <label for="artist">Artist: </label>
+      <input id="artist" type="text" name="artist" required>
+      <label for="track">Track: </label>
+      <input id="track" type="text" name="track" required>
+      <button type="submit" value="OK">Submit</button>
+    </form>
+    <div id="trackAnalyzing" style="display:none;">Analyzing...</div>
+    <div id="trackSpinner" class="loader"></div>
+    <script>
+      const trackForm = document.getElementById('tracktForm');
+      trackForm.addEventListener("submit", showLoader);
+      function showLoader() {
+        document.getElementById("trackAnalyzing").style.display = "block";
+        document.getElementById("trackSpinner").style.display = "block";
       }
     </script>
   </body>

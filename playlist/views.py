@@ -21,6 +21,7 @@ def home(request):
 
 def statistics(request):
     #Only fetches top 10 tracks because it takes a while.
+    #add audio_features()
     artist = request.GET.get('artist', '')
     if artist == '':
         return render(request, "playlist/home.html")
@@ -33,21 +34,37 @@ def statistics(request):
         track_uris.append(track['uri'])
         track_names.append(track['name'])
     track_tempos = []
+    track_energy = []
+    track_valence = []
     track_loudness = []
     track_key = []
     for track in track_uris:
-        track_tempos.append(spotify.audio_analysis(track)['track']['tempo'])
-        track_loudness.append(spotify.audio_analysis(track)['track']['loudness'])
-        track_key.append(spotify.audio_analysis(track)['track']['key'])
+        track_features = spotify.audio_features(track)[0]
+        track_tempos.append(track_features['tempo'])
+        track_energy.append(track_features['energy'])
+        track_valence.append(track_features['valence'])
+        track_loudness.append(track_features['loudness'])
+        track_key.append(track_features['key'])
 
-    fig_tempo = go.Figure()
-    fig_tempo.add_trace(go.Bar(x=track_names,
-                y=track_tempos, marker_color="rgb(40, 15, 107)"))
-    fig_tempo.update_layout(
-        title="Tempo of " + artist + " Tracks",
+    plot_div_tempo = bar_graph_constructor(artist, track_names, track_tempos, "Tempos (BPM)")
+
+    plot_div_energy = bar_graph_constructor(artist, track_names, track_energy, "Energy")
+
+    plot_div_valence = bar_graph_constructor(artist, track_names, track_valence, "Valence")
+
+    plot_div_loudness = bar_graph_constructor(artist, track_names, track_loudness, "Loudness (LUFs)")
+
+    plot_div_key = bar_graph_constructor(artist, track_names, track_key, "Key")
+
+    return render(request, "playlist/statistics.html", context={'plot_div_tempo': plot_div_tempo, 'plot_div_loudness': plot_div_loudness, 'plot_div_key': plot_div_key, 'plot_div_energy': plot_div_energy, 'plot_div_valence': plot_div_valence})
+
+def bar_graph_constructor(artist, tracks, feature, label):
+    fig = go.Figure()
+    fig.add_trace(go.Bar(x=tracks, y=feature, marker_color="rgb(40, 15, 107)"))
+    fig.update_layout(
+        title=label + " of " + artist + " Tracks",
         xaxis_title="Tracks",
-        yaxis_title="Tempo (BPM)",
-        legend_title="Legend Title",
+        yaxis_title=label,
         font=dict(
             family="Courier New, monospace",
             size=12,
@@ -57,46 +74,20 @@ def statistics(request):
         plot_bgcolor='rgba(0,0,0,0)',
         xaxis_showticklabels=False
     )
-    plot_div_tempo = plot(fig_tempo, output_type='div', include_plotlyjs=False, show_link=False, link_text="")
-
-    fig_loudness = go.Figure()
-    fig_loudness.add_trace(go.Bar(x=track_names,
-                y=track_loudness, marker_color="rgb(40, 15, 107)"))
-    fig_loudness.update_layout(
-        title="Loudness of " + artist + " Tracks",
-        xaxis_title="Tracks",
-        yaxis_title="Loudness (LUFs)",
-        legend_title="Legend Title",
-        font=dict(
-            family="Courier New, monospace",
-            size=12,
-            color="White"
-        ),
-        paper_bgcolor='rgba(0,0,0,0)',
-        plot_bgcolor='rgba(0,0,0,0)',
-        xaxis_showticklabels=False
-    )
-    plot_div_loudness = plot(fig_loudness, output_type='div', include_plotlyjs=False, show_link=False, link_text="")
-
-    fig_key = go.Figure()
-    fig_key.add_trace(go.Bar(x=track_names,
-                y=track_key, marker_color="rgb(40, 15, 107)"))
-    fig_key.update_layout(
-        title="Key of " + artist + " Tracks",
-        xaxis_title="Tracks",
-        yaxis_title="Key",
-        legend_title="Legend Title",
-        font=dict(
-            family="Courier New, monospace",
-            size=12,
-            color="White"
-        ),
-        paper_bgcolor='rgba(0,0,0,0)',
-        plot_bgcolor='rgba(0,0,0,0)',
-        xaxis_showticklabels=False
-    )
-    plot_div_key = plot(fig_key, output_type='div', include_plotlyjs=False, show_link=False, link_text="")
-    return render(request, "playlist/statistics.html", context={'plot_div_tempo': plot_div_tempo, 'plot_div_loudness': plot_div_loudness, 'plot_div_key': plot_div_key})
+    return plot(fig, output_type='div', include_plotlyjs=False, show_link=False, link_text="")
 
 def track_analysis(request):
+    artist = request.GET.get('artist', '')
+    if artist == '':
+        return render(request, "playlist/home.html")
+    track = request.GET.get('track', '')
+    if track == '':
+        return render(request, "playlist/home.html")
+    search_query = spotify.search(q="artist:" + artist + ", track:" + track, type='track')
+    artist = search_query['tracks']['items'][0]['artists'][0]['name']
+    track = search_query['tracks']['items'][0]['name']
+    track_uri = search_query['tracks']['items'][0]['uri']
+    section_analysis = spotify.audio_analysis(track_uri)['sections']
+
+    
     return render(request, "playlist/track_analysis.html")
