@@ -100,7 +100,7 @@ def track_analysis(request):
     track_id = search_query['tracks']['items'][0]['id']
     sections = spotify.audio_analysis(track_uri)['sections']
 
-    player = "<iframe style='border-radius:12px' src='https://open.spotify.com/embed/track/" + track_id +"' width='100%' height='380' frameBorder='0' allowfullscreen='' allow='autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture'></iframe>"
+    player = "<iframe style='border-radius:12px' src='https://open.spotify.com/embed/track/" + track_id + "' width='100%' height='380' frameBorder='0' allowfullscreen='' allow='autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture'></iframe>"
 
     time = []
     confidence = []
