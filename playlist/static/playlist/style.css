@@ -1,0 +1,28 @@
+.loader {
+  border: 8px solid #f3f3f3; /* Light grey */
+  border-top: 8px solid #5c1fff;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  animation: spin 2s linear infinite;
+  display: none;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+
+@font-face {
+      font-family: 'finalfantasy';
+      src: url('./fonts/OPTIEngeEtienne.otf');
+}
+@font-face {
+  font-family: 'polyester-alp51';
+  src: url('./fonts/2070POLYESTER-ALP51.ttf');
+}
+
+h1 {
+  font-family: 'polyester-alp51'
+}

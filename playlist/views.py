@@ -20,8 +20,11 @@ def home(request):
     return render(request, "playlist/home.html")
 
 def statistics(request):
+    #Only fetches top 10 tracks because it takes a while.
     artist = request.GET.get('artist', '')
-    artist = artist.title()
+    if artist == '':
+        return render(request, "playlist/home.html")
+    artist = spotify.search(q="artist:" + artist, type='artist')['artists']['items'][0]['name']
     artist_uri = spotify.search(q="artist:" + artist, type='artist')['artists']['items'][0]['uri']
     artist_tracks = spotify.artist_top_tracks(artist_uri)['tracks']
     track_uris = []
@@ -42,7 +45,7 @@ def statistics(request):
                 y=track_tempos, marker_color="rgb(40, 15, 107)"))
     fig_tempo.update_layout(
         title="Tempo of " + artist + " Tracks",
-        xaxis_title="Track IDs",
+        xaxis_title="Tracks",
         yaxis_title="Tempo (BPM)",
         legend_title="Legend Title",
         font=dict(
@@ -51,7 +54,8 @@ def statistics(request):
             color="White"
         ),
         paper_bgcolor='rgba(0,0,0,0)',
-        plot_bgcolor='rgba(0,0,0,0)'
+        plot_bgcolor='rgba(0,0,0,0)',
+        xaxis_showticklabels=False
     )
     plot_div_tempo = plot(fig_tempo, output_type='div', include_plotlyjs=False, show_link=False, link_text="")
 
@@ -60,7 +64,7 @@ def statistics(request):
                 y=track_loudness, marker_color="rgb(40, 15, 107)"))
     fig_loudness.update_layout(
         title="Loudness of " + artist + " Tracks",
-        xaxis_title="Track IDs",
+        xaxis_title="Tracks",
         yaxis_title="Loudness (LUFs)",
         legend_title="Legend Title",
         font=dict(
@@ -69,7 +73,8 @@ def statistics(request):
             color="White"
         ),
         paper_bgcolor='rgba(0,0,0,0)',
-        plot_bgcolor='rgba(0,0,0,0)'
+        plot_bgcolor='rgba(0,0,0,0)',
+        xaxis_showticklabels=False
     )
     plot_div_loudness = plot(fig_loudness, output_type='div', include_plotlyjs=False, show_link=False, link_text="")
 
@@ -78,7 +83,7 @@ def statistics(request):
                 y=track_key, marker_color="rgb(40, 15, 107)"))
     fig_key.update_layout(
         title="Key of " + artist + " Tracks",
-        xaxis_title="Track IDs",
+        xaxis_title="Tracks",
         yaxis_title="Key",
         legend_title="Legend Title",
         font=dict(
@@ -87,7 +92,11 @@ def statistics(request):
             color="White"
         ),
         paper_bgcolor='rgba(0,0,0,0)',
-        plot_bgcolor='rgba(0,0,0,0)'
+        plot_bgcolor='rgba(0,0,0,0)',
+        xaxis_showticklabels=False
     )
     plot_div_key = plot(fig_key, output_type='div', include_plotlyjs=False, show_link=False, link_text="")
     return render(request, "playlist/statistics.html", context={'plot_div_tempo': plot_div_tempo, 'plot_div_loudness': plot_div_loudness, 'plot_div_key': plot_div_key})
+
+def track_analysis(request):
+    return render(request, "playlist/track_analysis.html")

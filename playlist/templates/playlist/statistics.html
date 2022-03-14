@@ -11,11 +11,21 @@
 </head>
 <body style="color:white;">
   <h1>Trackolini</h1>
-  <form action = "statistics" method = "get">
+  <form id = 'form' action = "statistics" method = "get">
       <label for="artist">Artist: </label>
-      <input id="artist" type="text" name="artist">
-      <input type="submit" value="OK">
+      <input id="artist" type="text" name="artist" required>
+      <button type="submit" value="OK">Submit</button>
   </form>
+  <div id="analyzing" style="display:none;">Analyzing...</div>
+  <div id="spinner" class="loader"></div>
+  <script>
+    const form = document.getElementById('form');
+    form.addEventListener("submit", showLoader);
+    function showLoader() {
+      document.getElementById("analyzing").style.display = "block";
+      document.getElementById("spinner").style.display = "block";
+    }
+  </script>
   {% autoescape off %}
   {{ plot_div_tempo }}
   <hr>
