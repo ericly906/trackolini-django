@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from .graphs import *
+from .models import Track, Sections
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 import os
@@ -78,7 +79,31 @@ def track_analysis(request):
     track_uri = search_query['tracks']['items'][0]['uri']
     track_id = search_query['tracks']['items'][0]['id']
     sections = spotify.audio_analysis(track_uri)['sections']
-
+    if not Track.objects.filter(uid=track_uri).exists():
+        new_track_features = spotify.audio_features(track_uri)[0]
+        new_track = Track(
+                        uid=track_uri,
+                        trackname=track,
+                        artist=artist,
+                        tempo=new_track_features['tempo'],
+                        energy=new_track_features['energy'],
+                        valence=new_track_features['valence'],
+                        loudness=new_track_features['loudness'],
+                        key=new_track_features['key'],
+                        liveness=new_track_features['liveness'],
+                        danceability=new_track_features['danceability'],
+                        mode=new_track_features['mode'],
+                        speechiness=new_track_features['speechiness'],
+                        acousticness=new_track_features['acousticness'],
+                        duration_ms=new_track_features['duration_ms'],
+                        time_signature=new_track_features['time_signature'],
+                        search_count=0
+                        )
+        new_track.save()
+    else:
+        searched_track = Question.objects.get(uid=track_uri)
+        searched_track.search_count += 1
+        searched_track.save()
     player = "<iframe style='border-radius:12px' src='https://open.spotify.com/embed/track/" + track_id + "' width='100%' height='380' frameBorder='0' allowfullscreen='' allow='autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture'></iframe>"
 
     time = []
