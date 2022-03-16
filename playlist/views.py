@@ -6,9 +6,10 @@ from .models import Track, Sections
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 import os
+from decouple import config
 
-spotify = spotipy.Spotify(auth_manager=SpotifyClientCredentials(client_id=os.getenv('SPOTIFY_CLIENT_ID', 'default'),
-                                                           client_secret=os.getenv('SPOTIFY_CLIENT_SECRET', 'default')))
+spotify = spotipy.Spotify(auth_manager=SpotifyClientCredentials(client_id=config('SPOTIFY_CLIENT_ID', 'default'),
+                                                           client_secret=config('SPOTIFY_CLIENT_SECRET', 'default')))
 
 # Create your views here.
 def index(request):
@@ -97,7 +98,7 @@ def track_analysis(request):
                         acousticness=new_track_features['acousticness'],
                         duration_ms=new_track_features['duration_ms'],
                         time_signature=new_track_features['time_signature'],
-                        search_count=0
+                        search_count=1
                         )
         new_track.save()
     else:
