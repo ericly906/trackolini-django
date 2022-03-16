@@ -102,7 +102,7 @@ def track_analysis(request):
                         )
         new_track.save()
     else:
-        searched_track = Question.objects.get(uid=track_uri)
+        searched_track = Track.objects.get(uid=track_uri)
         searched_track.search_count += 1
         searched_track.save()
     player = "<iframe style='border-radius:12px' src='https://open.spotify.com/embed/track/" + track_id + "' width='100%' height='380' frameBorder='0' allowfullscreen='' allow='autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture'></iframe>"
