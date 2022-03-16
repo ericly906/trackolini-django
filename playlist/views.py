@@ -4,9 +4,10 @@ from django.urls import reverse
 from .graphs import *
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
+import os
 
-spotify = spotipy.Spotify(auth_manager=SpotifyClientCredentials(client_id="ccd3e124a27a4369873ad631f0e7bc21",
-                                                           client_secret="c2dd204ea9d14b2faa3cfbc3bc80abcf"))
+spotify = spotipy.Spotify(auth_manager=SpotifyClientCredentials(client_id=os.getenv('SPOTIFY_CLIENT_ID', 'default'),
+                                                           client_secret=os.getenv('SPOTIFY_CLIENT_SECRET', 'default')))
 
 # Create your views here.
 def index(request):

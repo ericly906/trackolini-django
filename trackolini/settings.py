@@ -75,15 +75,22 @@ WSGI_APPLICATION = 'trackolini.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
-
+DB_NAME = os.getenv('DATABASE', 'default')
+DB_USER = os.getenv('DB_USER', 'default')
+DB_PASSWORD = os.getenv('DB_PASSWORD', 'default')
+DB_HOST = os.getenv('DB_HOST', 'default')
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': DB_NAME,
+        'USER': DB_USER,
+        'PASSWORD': DB_PASSWORD,
+        'HOST': DB_HOST,
+        'PORT': '5432'
     }
 }
-
-
+#import dj_database_url
+#DATABASES['default'] = dj_database_url.config(conn_max_age=600)
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
 
