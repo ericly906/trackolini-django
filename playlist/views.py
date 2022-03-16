@@ -101,10 +101,14 @@ def track_analysis(request):
         time_signature.append(section['time_signature'])
         time_signature_confidence.append(section['time_signature_confidence'])
 
+    plot_div_confidence = line_plot_constructor(time, confidence, "Confidence")
+
+    plot_div_loudness = line_plot_constructor(time, loudness, "Loudness (LUFs)")
+
     plot_div_tempo = line_subplot_constructor(time, tempo, tempo_confidence, "Tempo", "Tempo Confidence")
 
     plot_div_key = line_subplot_constructor(time, key, key_confidence, "Key", "Key Confidence")
 
     plot_div_time_signature = line_subplot_constructor(time, time_signature, time_signature_confidence, "Time Signature", "Time Signature Confidence")
 
-    return render(request, "playlist/track_analysis.html", context={'artist': artist, 'track': track, 'player': player, 'plot_div_tempo': plot_div_tempo, 'plot_div_key': plot_div_key, 'plot_div_time_signature': plot_div_time_signature})
+    return render(request, "playlist/track_analysis.html", context={'artist': artist, 'track': track, 'player': player, 'plot_div_confidence': plot_div_confidence, 'plot_div_loudness': plot_div_loudness, 'plot_div_tempo': plot_div_tempo, 'plot_div_key': plot_div_key, 'plot_div_time_signature': plot_div_time_signature})
