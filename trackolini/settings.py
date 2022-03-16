@@ -75,10 +75,10 @@ WSGI_APPLICATION = 'trackolini.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
-DB_NAME = os.getenv('DATABASE', 'default')
-DB_USER = os.getenv('DB_USER', 'default')
-DB_PASSWORD = os.getenv('DB_PASSWORD', 'default')
-DB_HOST = os.getenv('DB_HOST', 'default')
+DB_NAME = config('DATABASE', 'default')
+DB_USER = config('DB_USER', 'default')
+DB_PASSWORD = config('DB_PASSWORD', 'default')
+DB_HOST = config('DB_HOST', 'default')
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
