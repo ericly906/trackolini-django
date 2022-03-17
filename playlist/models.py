@@ -23,8 +23,6 @@ class Track(models.Model):
 
 class Sections(models.Model):
     track = models.ForeignKey(Track, on_delete=models.CASCADE)
-    trackname = models.CharField(max_length=255)
-    artist = models.CharField(max_length=255)
     start = models.FloatField()
     duration = models.FloatField()
     confidence = models.FloatField()
@@ -39,3 +37,15 @@ class Sections(models.Model):
     time_signature_confidence = models.FloatField()
     def __str__(self):
         return self.trackname + ' by ' + self.artist
+
+class Artist(models.Model):
+    uri = models.CharField(max_length=255)
+    artist = models.CharField(max_length=255)
+    avg_tempo = models.FloatField()
+    avg_energy = models.FloatField()
+    avg_valence = models.FloatField()
+    avg_loudness = models.FloatField()
+    avg_key = models.FloatField()
+    search_count = models.IntegerField()
+    def __str__(self):
+        return self.artist

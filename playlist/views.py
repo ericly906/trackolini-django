@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from .graphs import *
-from .models import Track, Sections
+from .models import Track, Sections, Artist
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials, SpotifyOAuth
 import os
@@ -19,9 +19,7 @@ def index(request):
     return render(request, "playlist/index.html")
 
 def home(request):
-    spotify = spotipy.Spotify(auth_manager=spotify_cc)
-    spotify_cc.get_access_token()
-    return render(request, "playlist/home.html")
+    return render(request, "playlist/home.html", context={'CLIENT_ID': config('SPOTIFY_CLIENT_ID', 'default'), 'CLIENT_SECRET': config('SPOTIFY_CLIENT_SECRET', 'default')})
 
 def statistics(request):
     #Only fetches top 10 tracks because it takes a while.
@@ -55,6 +53,22 @@ def statistics(request):
         track_valence.append(track_features['valence'])
         track_loudness.append(track_features['loudness'])
         track_key.append(track_features['key'])
+    if not Artist.objects.filter(uri=artist_uri).exists():
+        new_artist = Artist(
+                        uri=artist_uri,
+                        artist=artist,
+                        avg_tempo=sum(track_tempos)/len(track_tempos),
+                        avg_energy=sum(track_energy)/len(track_energy),
+                        avg_valence=sum(track_valence)/len(track_valence),
+                        avg_loudness=sum(track_loudness)/len(track_loudness),
+                        avg_key=sum(track_key)/len(track_key),
+                        search_count=1
+                        )
+        new_artist.save()
+    else:
+        searched_artist=Artist.objects.get(uri=artist_uri)
+        searched_artist.search_count += 1
+        searched_artist.save()
 
     plot_div_tempo = bar_graph_constructor(artist, track_names, track_tempos, "Tempos (BPM)")
 
@@ -85,6 +99,7 @@ def track_analysis(request):
         return render(request, "playlist/home.html", context={'track_not_found_error': track_not_found_error})
 
     artist = search_query['tracks']['items'][0]['artists'][0]['name']
+    #artist_uri = search_query['tracks']['items'][0]['album']['artists'][0]['uri']
     track = search_query['tracks']['items'][0]['name']
     track_uri = search_query['tracks']['items'][0]['uri']
     track_id = search_query['tracks']['items'][0]['id']
