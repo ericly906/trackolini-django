@@ -3,6 +3,27 @@
 
 <link rel="stylesheet" type="text/css" href="{% static 'playlist/style.css' %}">
 <html style="background-color:rgb(35, 35, 35);">
+<script>
+  var client_id = {{ CLIENT_ID }};
+  var client_secret = {{ CLIENT_SECRET }};
+
+  var authOptions = {
+    url: 'https://accounts.spotify.com/api/token',
+    headers: {
+      'Authorization': 'Basic ' + (new Buffer(client_id + ':' + client_secret).toString('base64'))
+    },
+    form: {
+      grant_type: 'client_credentials'
+    },
+    json: true
+  };
+
+  request.post(authOptions, function(error, response, body) {
+    if (!error && response.statusCode === 200) {
+      var token = body.access_token;
+    }
+  });
+</script>
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
