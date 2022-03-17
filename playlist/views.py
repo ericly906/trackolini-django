@@ -4,23 +4,30 @@ from django.urls import reverse
 from .graphs import *
 from .models import Track, Sections
 import spotipy
-from spotipy.oauth2 import SpotifyClientCredentials
+from spotipy.oauth2 import SpotifyClientCredentials, SpotifyOAuth
 import os
 from decouple import config
 
-spotify = spotipy.Spotify(auth_manager=SpotifyClientCredentials(client_id=config('SPOTIFY_CLIENT_ID', 'default'),
-                                                           client_secret=config('SPOTIFY_CLIENT_SECRET', 'default')))
+spotify_cc = SpotifyClientCredentials(client_id=config('SPOTIFY_CLIENT_ID', 'default'),
+                                                           client_secret=config('SPOTIFY_CLIENT_SECRET', 'default'))
+spotify = spotipy.Spotify(auth_manager=spotify_cc)
+#spotify_oauth = SpotifyOAuth(client_id=config('SPOTIFY_CLIENT_ID', 'default'), client_secret=config('SPOTIFY_CLIENT_SECRET', 'default'), redirect_uri='http://localhost:8080/')
 
 # Create your views here.
+#TODO refresh tokens in the beginning of each view?
 def index(request):
     return render(request, "playlist/index.html")
 
 def home(request):
+    spotify = spotipy.Spotify(auth_manager=spotify_cc)
+    spotify_cc.get_access_token()
     return render(request, "playlist/home.html")
 
 def statistics(request):
     #Only fetches top 10 tracks because it takes a while.
     #add audio_features()
+    spotify = spotipy.Spotify(auth_manager=spotify_cc)
+    spotify_cc.get_access_token()
     artist = request.GET.get('artist', '')
     if artist == '':
         return render(request, "playlist/home.html")
@@ -64,6 +71,8 @@ def statistics(request):
 
 
 def track_analysis(request):
+    spotify = spotipy.Spotify(auth_manager=spotify_cc)
+    spotify_cc.get_access_token()
     artist = request.GET.get('artist', '')
     if artist == '':
         return render(request, "playlist/home.html")
