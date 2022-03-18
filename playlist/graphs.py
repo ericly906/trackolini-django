@@ -21,6 +21,23 @@ def bar_graph_constructor(artist, tracks, feature, label):
     )
     return plot(fig, output_type='div', include_plotlyjs=False, show_link=False, link_text="")
 
+def gen_bar_graph_constructor(title, x, y, xlabel, ylabel):
+    fig = go.Figure()
+    fig.add_trace(go.Bar(x=x, y=y, marker_color="rgb(40, 15, 107)"))
+    fig.update_layout(
+        title=title,
+        xaxis_title=xlabel,
+        yaxis_title = ylabel,
+        font=dict(
+            family="Courier New, monospace",
+            size=12,
+            color="White"
+        ),
+        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='rgba(0,0,0,0)',
+    )
+    return plot(fig, output_type='div', include_plotlyjs=False, show_link=False, link_text="")
+
 def line_plot_constructor(time, feature, label):
     fig = px.line(x=time, y=feature)
     fig.update_layout(

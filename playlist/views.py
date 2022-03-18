@@ -3,6 +3,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from .graphs import *
 from .models import Track, Sections, Artist
+import pandas as pd
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials, SpotifyOAuth
 import os
@@ -19,13 +20,15 @@ def index(request):
     return render(request, "playlist/index.html")
 
 def home(request):
-    return render(request, "playlist/home.html", context={'CLIENT_ID': config('SPOTIFY_CLIENT_ID', 'default'), 'CLIENT_SECRET': config('SPOTIFY_CLIENT_SECRET', 'default')})
+    artist_data = Artist.objects.all()
+    artist_df = pd.DataFrame(list(artist_data.values()))
+    artist_df = artist_df.sort_values(by='search_count', ascending=False)
+    plot_div_search = gen_bar_graph_constructor(title="Most Searched Artists", x=list(artist_df['artist']), y=list(artist_df['search_count']), xlabel="Artist", ylabel="Search Count")
+    return render(request, "playlist/home.html", context={'plot_div_search': plot_div_search})
 
 def statistics(request):
     #Only fetches top 10 tracks because it takes a while.
     #add audio_features()
-    spotify = spotipy.Spotify(auth_manager=spotify_cc)
-    spotify_cc.get_access_token()
     artist = request.GET.get('artist', '')
     if artist == '':
         return render(request, "playlist/home.html")
@@ -85,8 +88,6 @@ def statistics(request):
 
 
 def track_analysis(request):
-    spotify = spotipy.Spotify(auth_manager=spotify_cc)
-    spotify_cc.get_access_token()
     artist = request.GET.get('artist', '')
     if artist == '':
         return render(request, "playlist/home.html")
