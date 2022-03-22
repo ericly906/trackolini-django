@@ -9,8 +9,8 @@ from spotipy.oauth2 import SpotifyClientCredentials, SpotifyOAuth
 import os
 from decouple import config
 
-spotify_cc = SpotifyClientCredentials(client_id=os.getenv('SPOTIFY_CLIENT_ID', 'default'),
-                                                           client_secret=os.getenv('SPOTIFY_CLIENT_SECRET', 'default'))
+spotify_cc = SpotifyClientCredentials(client_id=config('SPOTIFY_CLIENT_ID', 'default'),
+                                                           client_secret=config('SPOTIFY_CLIENT_SECRET', 'default'))
 spotify = spotipy.Spotify(auth_manager=spotify_cc)
 #spotify_oauth = SpotifyOAuth(client_id=config('SPOTIFY_CLIENT_ID', 'default'), client_secret=config('SPOTIFY_CLIENT_SECRET', 'default'), redirect_uri='http://localhost:8080/')
 
@@ -20,8 +20,8 @@ def index(request):
     return render(request, "playlist/index.html")
 
 def home(request):
-    spotify_cc = SpotifyClientCredentials(client_id=os.getenv('SPOTIFY_CLIENT_ID', 'default'),
-                                                               client_secret=os.getenv('SPOTIFY_CLIENT_SECRET', 'default'))
+    spotify_cc = SpotifyClientCredentials(client_id=config('SPOTIFY_CLIENT_ID', 'default'),
+                                                               client_secret=config('SPOTIFY_CLIENT_SECRET', 'default'))
     spotify = spotipy.Spotify(auth_manager=spotify_cc)
     artist_data = Artist.objects.all()
     artist_df = pd.DataFrame(list(artist_data.values()))
@@ -32,8 +32,8 @@ def home(request):
 def statistics(request):
     #Only fetches top 10 tracks because it takes a while.
     #add audio_features()
-    spotify_cc = SpotifyClientCredentials(client_id=os.getenv('SPOTIFY_CLIENT_ID', 'default'),
-                                                               client_secret=os.getenv('SPOTIFY_CLIENT_SECRET', 'default'))
+    spotify_cc = SpotifyClientCredentials(client_id=config('SPOTIFY_CLIENT_ID', 'default'),
+                                                               client_secret=config('SPOTIFY_CLIENT_SECRET', 'default'))
     spotify = spotipy.Spotify(auth_manager=spotify_cc)
     artist = request.GET.get('artist', '')
     if artist == '':
@@ -94,9 +94,9 @@ def statistics(request):
 
 
 def track_analysis(request):
-    spotify_cc = SpotifyClientCredentials(client_id=os.getenv('SPOTIFY_CLIENT_ID', 'default'),
-                                                               client_secret=os.getenv('SPOTIFY_CLIENT_SECRET', 'default'))
-    spotify = spotipy.Spotify(auth_manager=spotify_cc)  
+    spotify_cc = SpotifyClientCredentials(client_id=config('SPOTIFY_CLIENT_ID', 'default'),
+                                                               client_secret=config('SPOTIFY_CLIENT_SECRET', 'default'))
+    spotify = spotipy.Spotify(auth_manager=spotify_cc)
     artist = request.GET.get('artist', '')
     if artist == '':
         return render(request, "playlist/home.html")
