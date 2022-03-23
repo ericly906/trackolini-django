@@ -8,10 +8,15 @@ import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials, SpotifyOAuth
 import os
 from decouple import config
+import requests
+import base64
+import json
+from secrets import *
 
 spotify_cc = SpotifyClientCredentials(client_id=config('SPOTIFY_CLIENT_ID', 'default'),
                                                            client_secret=config('SPOTIFY_CLIENT_SECRET', 'default'))
 spotify = spotipy.Spotify(auth_manager=spotify_cc)
+url = "https://accounts.spotify.com/api/token"
 #spotify_oauth = SpotifyOAuth(client_id=config('SPOTIFY_CLIENT_ID', 'default'), client_secret=config('SPOTIFY_CLIENT_SECRET', 'default'), redirect_uri='http://localhost:8080/')
 
 # Create your views here.
@@ -20,21 +25,49 @@ def index(request):
     return render(request, "playlist/index.html")
 
 def home(request):
-    spotify_cc = SpotifyClientCredentials(client_id=config('SPOTIFY_CLIENT_ID', 'default'),
-                                                               client_secret=config('SPOTIFY_CLIENT_SECRET', 'default'))
-    spotify = spotipy.Spotify(auth_manager=spotify_cc)
+    headers = {}
+    data = {}
+
+    # Encode as Base64
+    message = f"{config('SPOTIFY_CLIENT_ID', 'default')}:{config('SPOTIFY_CLIENT_SECRET', 'default')}"
+    messageBytes = message.encode('ascii')
+    base64Bytes = base64.b64encode(messageBytes)
+    base64Message = base64Bytes.decode('ascii')
+
+    headers['Authorization'] = f"Basic {base64Message}"
+    data['grant_type'] = "client_credentials"
+
+    r = requests.post(url, headers=headers, data=data)
+
+    token = r.json()['access_token']
+
     artist_data = Artist.objects.all()
     artist_df = pd.DataFrame(list(artist_data.values()))
     artist_df = artist_df.sort_values(by='search_count', ascending=False)
     plot_div_search = gen_bar_graph_constructor(title="Most Searched Artists", x=list(artist_df['artist']), y=list(artist_df['search_count']), xlabel="Artist", ylabel="Search Count")
-    return render(request, "playlist/home.html", context={'plot_div_search': plot_div_search})
+    response = render(request, "playlist/home.html", context={'plot_div_search': plot_div_search})
+    response['Authorization'] = "Bearer " + token
+    return response
 
 def statistics(request):
     #Only fetches top 10 tracks because it takes a while.
     #add audio_features()
-    spotify_cc = SpotifyClientCredentials(client_id=config('SPOTIFY_CLIENT_ID', 'default'),
-                                                               client_secret=config('SPOTIFY_CLIENT_SECRET', 'default'))
-    spotify = spotipy.Spotify(auth_manager=spotify_cc)
+    headers = {}
+    data = {}
+
+    # Encode as Base64
+    message = f"{config('SPOTIFY_CLIENT_ID', 'default')}:{config('SPOTIFY_CLIENT_SECRET', 'default')}"
+    messageBytes = message.encode('ascii')
+    base64Bytes = base64.b64encode(messageBytes)
+    base64Message = base64Bytes.decode('ascii')
+
+    headers['Authorization'] = f"Basic {base64Message}"
+    data['grant_type'] = "client_credentials"
+
+    r = requests.post(url, headers=headers, data=data)
+
+    token = r.json()['access_token']
+
     artist = request.GET.get('artist', '')
     if artist == '':
         return render(request, "playlist/home.html")
@@ -89,14 +122,29 @@ def statistics(request):
 
     plot_div_key = bar_graph_constructor(artist, track_names, track_key, "Key")
 
-    return render(request, "playlist/statistics.html", context={'plot_div_tempo': plot_div_tempo, 'plot_div_loudness': plot_div_loudness, 'plot_div_key': plot_div_key, 'plot_div_energy': plot_div_energy, 'plot_div_valence': plot_div_valence})
+    response = render(request, "playlist/statistics.html", context={'plot_div_tempo': plot_div_tempo, 'plot_div_loudness': plot_div_loudness, 'plot_div_key': plot_div_key, 'plot_div_energy': plot_div_energy, 'plot_div_valence': plot_div_valence})
+    response['Authorization'] = "Bearer " + token
+    return response
 
 
 
 def track_analysis(request):
-    spotify_cc = SpotifyClientCredentials(client_id=config('SPOTIFY_CLIENT_ID', 'default'),
-                                                               client_secret=config('SPOTIFY_CLIENT_SECRET', 'default'))
-    spotify = spotipy.Spotify(auth_manager=spotify_cc)
+    headers = {}
+    data = {}
+
+    # Encode as Base64
+    message = f"{config('SPOTIFY_CLIENT_ID', 'default')}:{config('SPOTIFY_CLIENT_SECRET', 'default')}"
+    messageBytes = message.encode('ascii')
+    base64Bytes = base64.b64encode(messageBytes)
+    base64Message = base64Bytes.decode('ascii')
+
+    headers['Authorization'] = f"Basic {base64Message}"
+    data['grant_type'] = "client_credentials"
+
+    r = requests.post(url, headers=headers, data=data)
+
+    token = r.json()['access_token']
+
     artist = request.GET.get('artist', '')
     if artist == '':
         return render(request, "playlist/home.html")
@@ -172,4 +220,6 @@ def track_analysis(request):
 
     plot_div_time_signature = line_subplot_constructor(time, time_signature, time_signature_confidence, "Time Signature", "Time Signature Confidence")
 
-    return render(request, "playlist/track_analysis.html", context={'artist': artist, 'track': track, 'player': player, 'plot_div_confidence': plot_div_confidence, 'plot_div_loudness': plot_div_loudness, 'plot_div_tempo': plot_div_tempo, 'plot_div_key': plot_div_key, 'plot_div_time_signature': plot_div_time_signature})
+    response = render(request, "playlist/track_analysis.html", context={'artist': artist, 'track': track, 'player': player, 'plot_div_confidence': plot_div_confidence, 'plot_div_loudness': plot_div_loudness, 'plot_div_tempo': plot_div_tempo, 'plot_div_key': plot_div_key, 'plot_div_time_signature': plot_div_time_signature})
+    response['Authorization'] = "Bearer " + token
+    return response
