@@ -39,14 +39,14 @@ def home(request):
 
     r = requests.post(url, headers=headers, data=data)
     print(r)
-    token = r.json()['access_token']
+    #token = r.json()['access_token']
 
     artist_data = Artist.objects.all()
     artist_df = pd.DataFrame(list(artist_data.values()))
     artist_df = artist_df.sort_values(by='search_count', ascending=False)
     plot_div_search = gen_bar_graph_constructor(title="Most Searched Artists", x=list(artist_df['artist']), y=list(artist_df['search_count']), xlabel="Artist", ylabel="Search Count")
     response = render(request, "playlist/home.html", context={'plot_div_search': plot_div_search})
-    response['Authorization'] = "Bearer " + token
+    #response['Authorization'] = "Bearer " + token
     return response
 
 def statistics(request):
@@ -66,7 +66,7 @@ def statistics(request):
 
     r = requests.post(url, headers=headers, data=data)
 
-    token = r.json()['access_token']
+    #token = r.json()['access_token']
 
     artist = request.GET.get('artist', '')
     if artist == '':
@@ -123,7 +123,7 @@ def statistics(request):
     plot_div_key = bar_graph_constructor(artist, track_names, track_key, "Key")
 
     response = render(request, "playlist/statistics.html", context={'plot_div_tempo': plot_div_tempo, 'plot_div_loudness': plot_div_loudness, 'plot_div_key': plot_div_key, 'plot_div_energy': plot_div_energy, 'plot_div_valence': plot_div_valence})
-    response['Authorization'] = "Bearer " + token
+    #response['Authorization'] = "Bearer " + token
     return response
 
 
@@ -143,7 +143,7 @@ def track_analysis(request):
 
     r = requests.post(url, headers=headers, data=data)
 
-    token = r.json()['access_token']
+    #token = r.json()['access_token']
 
     artist = request.GET.get('artist', '')
     if artist == '':
@@ -221,5 +221,5 @@ def track_analysis(request):
     plot_div_time_signature = line_subplot_constructor(time, time_signature, time_signature_confidence, "Time Signature", "Time Signature Confidence")
 
     response = render(request, "playlist/track_analysis.html", context={'artist': artist, 'track': track, 'player': player, 'plot_div_confidence': plot_div_confidence, 'plot_div_loudness': plot_div_loudness, 'plot_div_tempo': plot_div_tempo, 'plot_div_key': plot_div_key, 'plot_div_time_signature': plot_div_time_signature})
-    response['Authorization'] = "Bearer " + token
+    #response['Authorization'] = "Bearer " + token
     return response
