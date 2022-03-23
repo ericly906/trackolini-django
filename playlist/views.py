@@ -38,7 +38,9 @@ def home(request):
     data['grant_type'] = "client_credentials"
 
     r = requests.post(url, headers=headers, data=data)
-
+    print(r)
+    if r.status_code != 200:
+        return False
     token = r.json()['access_token']
 
     artist_data = Artist.objects.all()
