@@ -28,8 +28,10 @@ def home(request):
     headers = {}
     data = {}
     url = "https://accounts.spotify.com/api/token"
+    sp_id = config('SPOTIFY_CLIENT_ID', 'default')
+    sp_secret = config('SPOTIFY_CLIENT_SECRET', 'default')
     # Encode as Base64
-    message = f"{config('SPOTIFY_CLIENT_ID', 'default')}:{config('SPOTIFY_CLIENT_SECRET', 'default')}"
+    message = f"{sp_id}:{sp_secret}"
     messageBytes = message.encode()
     base64Bytes = base64.b64encode(messageBytes)
     base64Message = base64Bytes.decode()
@@ -38,6 +40,8 @@ def home(request):
     data['grant_type'] = "client_credentials"
 
     r = requests.post(url, headers=headers, data=data)
+    print(sp_id)
+    print(sp_secret)
     print(r.json())
     token = r.json()['access_token']
 
