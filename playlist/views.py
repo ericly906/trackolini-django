@@ -30,9 +30,9 @@ def home(request):
     url = "https://accounts.spotify.com/api/token"
     # Encode as Base64
     message = f"{config('SPOTIFY_CLIENT_ID', 'default')}:{config('SPOTIFY_CLIENT_SECRET', 'default')}"
-    messageBytes = message.encode('ascii')
+    messageBytes = message.encode()
     base64Bytes = base64.b64encode(messageBytes)
-    base64Message = base64Bytes.decode('ascii')
+    base64Message = base64Bytes.decode()
 
     headers['Authorization'] = f"Basic {base64Message}"
     data['grant_type'] = "client_credentials"
@@ -57,9 +57,9 @@ def statistics(request):
     url = "https://accounts.spotify.com/api/token"
     # Encode as Base64
     message = f"{config('SPOTIFY_CLIENT_ID', 'default')}:{config('SPOTIFY_CLIENT_SECRET', 'default')}"
-    messageBytes = message.encode('ascii')
+    messageBytes = message.encode()
     base64Bytes = base64.b64encode(messageBytes)
-    base64Message = base64Bytes.decode('ascii')
+    base64Message = base64Bytes.decode()
 
     headers['Authorization'] = f"Basic {base64Message}"
     data['grant_type'] = "client_credentials"
@@ -134,9 +134,9 @@ def track_analysis(request):
     url = "https://accounts.spotify.com/api/token"
     # Encode as Base64
     message = f"{config('SPOTIFY_CLIENT_ID', 'default')}:{config('SPOTIFY_CLIENT_SECRET', 'default')}"
-    messageBytes = message.encode('ascii')
+    messageBytes = message.encode()
     base64Bytes = base64.b64encode(messageBytes)
-    base64Message = base64Bytes.decode('ascii')
+    base64Message = base64Bytes.decode()
 
     headers['Authorization'] = f"Basic {base64Message}"
     data['grant_type'] = "client_credentials"
