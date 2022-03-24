@@ -38,7 +38,7 @@ def home(request):
     data['grant_type'] = "client_credentials"
 
     r = requests.post(url, headers=headers, data=data)
-    print(r)
+    print(r.json())
     token = r.json()['access_token']
 
     artist_data = Artist.objects.all()
@@ -46,7 +46,7 @@ def home(request):
     artist_df = artist_df.sort_values(by='search_count', ascending=False)
     plot_div_search = gen_bar_graph_constructor(title="Most Searched Artists", x=list(artist_df['artist']), y=list(artist_df['search_count']), xlabel="Artist", ylabel="Search Count")
     response = render(request, "playlist/home.html", context={'plot_div_search': plot_div_search})
-    #response['Authorization'] = "Bearer " + token
+    response['Authorization'] = "Bearer " + token
     return response
 
 def statistics(request):
