@@ -27,7 +27,7 @@ def index(request):
 def home(request):
     headers = {}
     data = {}
-
+    url = "https://accounts.spotify.com/api/token"
     # Encode as Base64
     message = f"{config('SPOTIFY_CLIENT_ID', 'default')}:{config('SPOTIFY_CLIENT_SECRET', 'default')}"
     messageBytes = message.encode('ascii')
@@ -39,7 +39,7 @@ def home(request):
 
     r = requests.post(url, headers=headers, data=data)
     print(r)
-    #token = r.json()['access_token']
+    token = r.json()['access_token']
 
     artist_data = Artist.objects.all()
     artist_df = pd.DataFrame(list(artist_data.values()))
@@ -54,7 +54,7 @@ def statistics(request):
     #add audio_features()
     headers = {}
     data = {}
-
+    url = "https://accounts.spotify.com/api/token"
     # Encode as Base64
     message = f"{config('SPOTIFY_CLIENT_ID', 'default')}:{config('SPOTIFY_CLIENT_SECRET', 'default')}"
     messageBytes = message.encode('ascii')
@@ -66,7 +66,7 @@ def statistics(request):
 
     r = requests.post(url, headers=headers, data=data)
 
-    #token = r.json()['access_token']
+    token = r.json()['access_token']
 
     artist = request.GET.get('artist', '')
     if artist == '':
@@ -123,7 +123,7 @@ def statistics(request):
     plot_div_key = bar_graph_constructor(artist, track_names, track_key, "Key")
 
     response = render(request, "playlist/statistics.html", context={'plot_div_tempo': plot_div_tempo, 'plot_div_loudness': plot_div_loudness, 'plot_div_key': plot_div_key, 'plot_div_energy': plot_div_energy, 'plot_div_valence': plot_div_valence})
-    #response['Authorization'] = "Bearer " + token
+    response['Authorization'] = "Bearer " + token
     return response
 
 
@@ -131,7 +131,7 @@ def statistics(request):
 def track_analysis(request):
     headers = {}
     data = {}
-
+    url = "https://accounts.spotify.com/api/token"
     # Encode as Base64
     message = f"{config('SPOTIFY_CLIENT_ID', 'default')}:{config('SPOTIFY_CLIENT_SECRET', 'default')}"
     messageBytes = message.encode('ascii')
@@ -143,7 +143,7 @@ def track_analysis(request):
 
     r = requests.post(url, headers=headers, data=data)
 
-    #token = r.json()['access_token']
+    token = r.json()['access_token']
 
     artist = request.GET.get('artist', '')
     if artist == '':
@@ -221,5 +221,5 @@ def track_analysis(request):
     plot_div_time_signature = line_subplot_constructor(time, time_signature, time_signature_confidence, "Time Signature", "Time Signature Confidence")
 
     response = render(request, "playlist/track_analysis.html", context={'artist': artist, 'track': track, 'player': player, 'plot_div_confidence': plot_div_confidence, 'plot_div_loudness': plot_div_loudness, 'plot_div_tempo': plot_div_tempo, 'plot_div_key': plot_div_key, 'plot_div_time_signature': plot_div_time_signature})
-    #response['Authorization'] = "Bearer " + token
+    response['Authorization'] = "Bearer " + token
     return response
